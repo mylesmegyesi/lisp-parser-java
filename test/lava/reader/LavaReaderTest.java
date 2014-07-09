@@ -515,6 +515,41 @@ public class LavaReaderTest {
   }
 
   @Test
+  public void readsMultipleExpressions() throws Exception {
+    ImmutableList<AstNode> nodes = readString("abc def");
+    assertEquals(2, nodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) nodes.first();
+    assertEquals("abc", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) nodes.get(1);
+    assertEquals("def", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+  }
+
+  @Test
+  public void readsAListExpressionThenAnotherExpression() throws Exception {
+    ImmutableList<AstNode> nodes = readString("(a b) def");
+    assertEquals(2, nodes.size());
+
+    ImmutableList<AstNode> listNodes = ((ListNode) nodes.first()).getNodes();
+    assertEquals(2, listNodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
+    assertEquals("a", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) listNodes.get(1);
+    assertEquals("b", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+
+    SymbolNode symbolNode3 = (SymbolNode) nodes.get(1);
+    assertEquals("def", symbolNode3.getName());
+    assertEquals("", symbolNode3.getNamespace());
+  }
+
+  @Test
   public void readAnEmptyList() throws Exception {
     AstNode node = readStringFirstNode("()");
     assertThat(node, instanceOf(ListNode.class));
@@ -625,41 +660,6 @@ public class LavaReaderTest {
   }
 
   @Test
-  public void readsMultipleExpressions() throws Exception {
-    ImmutableList<AstNode> nodes = readString("abc def");
-    assertEquals(2, nodes.size());
-
-    SymbolNode symbolNode1 = (SymbolNode) nodes.first();
-    assertEquals("abc", symbolNode1.getName());
-    assertEquals("", symbolNode1.getNamespace());
-
-    SymbolNode symbolNode2 = (SymbolNode) nodes.get(1);
-    assertEquals("def", symbolNode2.getName());
-    assertEquals("", symbolNode2.getNamespace());
-  }
-
-  @Test
-  public void readsAListExpressionThenAnotherExpression() throws Exception {
-    ImmutableList<AstNode> nodes = readString("(a b) def");
-    assertEquals(2, nodes.size());
-
-    ImmutableList<AstNode> listNodes = ((ListNode) nodes.first()).getNodes();
-    assertEquals(2, listNodes.size());
-
-    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
-    assertEquals("a", symbolNode1.getName());
-    assertEquals("", symbolNode1.getNamespace());
-
-    SymbolNode symbolNode2 = (SymbolNode) listNodes.get(1);
-    assertEquals("b", symbolNode2.getName());
-    assertEquals("", symbolNode2.getNamespace());
-
-    SymbolNode symbolNode3 = (SymbolNode) nodes.get(1);
-    assertEquals("def", symbolNode3.getName());
-    assertEquals("", symbolNode3.getNamespace());
-  }
-
-  @Test
   public void readAListWithOneInteger() throws Exception {
     AstNode node = readStringFirstNode("(1)");
     assertThat(node, instanceOf(ListNode.class));
@@ -759,4 +759,86 @@ public class LavaReaderTest {
     BooleanNode booleanNode = (BooleanNode) listNodes.first();
     assertFalse(booleanNode.getValue());
   }
+
+  @Test
+  public void readAnEmptyVector() throws Exception {
+    AstNode node = readStringFirstNode("[]");
+    assertThat(node, instanceOf(VectorNode.class));
+    VectorNode node1 = (VectorNode) node;
+    ImmutableList<AstNode> vectorNodes = node1.getNodes();
+    assertEquals(0, vectorNodes.size());
+  }
+
+  @Test
+  public void readAVectorWithFiveSymbolsSeparatedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("[\n a, ,b, the-ns/c\n]");
+    assertThat(node, instanceOf(VectorNode.class));
+    VectorNode node1 = (VectorNode) node;
+    ImmutableList<AstNode> vectorNodes = node1.getNodes();
+    assertEquals(3, vectorNodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) vectorNodes.first();
+    assertEquals("a", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) vectorNodes.get(1);
+    assertEquals("b", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+
+    SymbolNode symbolNode3 = (SymbolNode) vectorNodes.get(2);
+    assertEquals("c", symbolNode3.getName());
+    assertEquals("the-ns", symbolNode3.getNamespace());
+  }
+
+  @Test
+  public void readAnEmptySet() throws Exception {
+    AstNode node = readStringFirstNode("#{}");
+    assertThat(node, instanceOf(SetNode.class));
+    SetNode node1 = (SetNode) node;
+    ImmutableList<AstNode> setNodes = node1.getNodes();
+    assertEquals(0, setNodes.size());
+  }
+
+  @Test
+  public void readASetWithFiveSymbolsSeparatedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("#{\n a, ,b, the-ns/c\n}");
+    assertThat(node, instanceOf(SetNode.class));
+    SetNode node1 = (SetNode) node;
+    ImmutableList<AstNode> setNodes = node1.getNodes();
+    assertEquals(3, setNodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) setNodes.first();
+    assertEquals("a", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) setNodes.get(1);
+    assertEquals("b", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+
+    SymbolNode symbolNode3 = (SymbolNode) setNodes.get(2);
+    assertEquals("c", symbolNode3.getName());
+    assertEquals("the-ns", symbolNode3.getNamespace());
+  }
+
+  @Test
+  public void doesNotRemoveDuplicatesFromSetOnRead() throws Exception {
+    AstNode node = readStringFirstNode("#{a a a}");
+    assertThat(node, instanceOf(SetNode.class));
+    SetNode node1 = (SetNode) node;
+    ImmutableList<AstNode> setNodes = node1.getNodes();
+    assertEquals(3, setNodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) setNodes.first();
+    assertEquals("a", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) setNodes.get(1);
+    assertEquals("a", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+
+    SymbolNode symbolNode3 = (SymbolNode) setNodes.get(2);
+    assertEquals("a", symbolNode3.getName());
+    assertEquals("", symbolNode3.getNamespace());
+  }
+
 }
