@@ -1,6 +1,6 @@
 package lava.reader;
 
-public class KeywordNode implements Node {
+public class KeywordNode implements AstNode {
   private SymbolNode symbol;
 
   KeywordNode(SymbolNode symbol) {

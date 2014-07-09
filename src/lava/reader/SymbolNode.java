@@ -1,6 +1,6 @@
 package lava.reader;
 
-public class SymbolNode implements Node {
+public class SymbolNode implements AstNode {
   private String namespace;
   private String name;
 

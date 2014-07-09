@@ -8,16 +8,18 @@ import static org.junit.Assert.*;
 
 public class LavaReaderTest {
 
-  private ImmutableList<Node> readString(String s) {
+  private ImmutableList<AstNode> readString(String s) {
     LavaReader reader = new LavaReader();
     ReadResult result = reader.readString(s);
     return result.getNodes();
   }
 
-  private Node readStringFirstNode(String s) throws Exception {
-    ImmutableList<Node> nodes = readString(s);
+  private AstNode readStringFirstNode(String s) throws Exception {
+    ImmutableList<AstNode> nodes = readString(s);
     if (nodes.size() == 1) {
       return nodes.first();
+    } else if (nodes.size() == 0) {
+      fail("Tried read first node of string but no nodes: " + nodes.toString());
     } else {
       fail("Tried read first node of string but multiple nodes read: " + nodes.toString());
     }
@@ -26,175 +28,175 @@ public class LavaReaderTest {
 
   @Test
   public void readsAnEmptyStringAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString("");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString("");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsASpaceAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString(" ");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString(" ");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsMultipleSpacesAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString("  ");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString("  ");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsAUnixNewlineAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString("\n");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString("\n");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsMultipleUnixNewlinesAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString("\n\n");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString("\n\n");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsAWindowsNewlineAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString("\r");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString("\r");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsMultipleWindowsNewlinesAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString("\r\r");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString("\r\r");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsCommaAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString(",");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString(",");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsMultipleCommasAsNothing() throws Exception {
-    ImmutableList<Node> nodes = readString(",,");
-    assertEquals(nodes.size(), 0);
+    ImmutableList<AstNode> nodes = readString(",,");
+    assertEquals(0, nodes.size());
   }
 
   @Test
   public void readsNil() throws Exception {
-    Node node = readStringFirstNode("nil");
+    AstNode node = readStringFirstNode("nil");
     assertThat(node, instanceOf(NilNode.class));
   }
 
   @Test
   public void readsNilPrecededByWhitespace() throws Exception {
-    Node node = readStringFirstNode("\nnil");
+    AstNode node = readStringFirstNode("\nnil");
     assertThat(node, instanceOf(NilNode.class));
   }
 
   @Test
   public void readsNilFollowedByWhitespace() throws Exception {
-    Node node = readStringFirstNode("\nnil\n");
+    AstNode node = readStringFirstNode("\nnil\n");
     assertThat(node, instanceOf(NilNode.class));
   }
 
   @Test
   public void readsTrue() throws Exception {
-    Node node = readStringFirstNode("true");
+    AstNode node = readStringFirstNode("true");
     assertThat(node, instanceOf(BooleanNode.class));
     assertTrue(((BooleanNode) node).getValue());
   }
 
   @Test
   public void readsTrueFollowedByWhitespace() throws Exception {
-    Node node = readStringFirstNode("true\n");
+    AstNode node = readStringFirstNode("true\n");
     assertThat(node, instanceOf(BooleanNode.class));
     assertTrue(((BooleanNode) node).getValue());
   }
 
   @Test
   public void readsFalse() throws Exception {
-    Node node = readStringFirstNode("false");
+    AstNode node = readStringFirstNode("false");
     assertThat(node, instanceOf(BooleanNode.class));
     assertFalse(((BooleanNode) node).getValue());
   }
 
   @Test
   public void readsFalseFollowedByWhiteSpace() throws Exception {
-    Node node = readStringFirstNode("false\n");
+    AstNode node = readStringFirstNode("false\n");
     assertThat(node, instanceOf(BooleanNode.class));
     assertFalse(((BooleanNode) node).getValue());
   }
 
   @Test
   public void readSymbolWithoutNs() throws Exception {
-    Node node = readStringFirstNode("a-symbol");
+    AstNode node = readStringFirstNode("a-symbol");
     assertThat(node, instanceOf(SymbolNode.class));
     SymbolNode node1 = (SymbolNode) node;
-    assertEquals(node1.getName(), "a-symbol");
-    assertEquals(node1.getNamespace(), "");
+    assertEquals("a-symbol", node1.getName());
+    assertEquals("", node1.getNamespace());
   }
 
   @Test
   public void readSymbolPrecededByWhitespace() throws Exception {
-    Node node = readStringFirstNode("\na-symbol");
+    AstNode node = readStringFirstNode("\na-symbol");
     assertThat(node, instanceOf(SymbolNode.class));
     SymbolNode node1 = (SymbolNode) node;
-    assertEquals(node1.getName(), "a-symbol");
-    assertEquals(node1.getNamespace(), "");
+    assertEquals("a-symbol", node1.getName());
+    assertEquals("", node1.getNamespace());
   }
 
   @Test
   public void readSymbolFollowedByWhitespace() throws Exception {
-    Node node = readStringFirstNode("\na-symbol\n");
+    AstNode node = readStringFirstNode("\na-symbol\n");
     assertThat(node, instanceOf(SymbolNode.class));
     SymbolNode node1 = (SymbolNode) node;
-    assertEquals(node1.getName(), "a-symbol");
-    assertEquals(node1.getNamespace(), "");
+    assertEquals("a-symbol", node1.getName());
+    assertEquals("", node1.getNamespace());
   }
 
   @Test
   public void readSymbolWithNamespace() throws Exception {
-    Node node = readStringFirstNode("ns/a-symbol");
+    AstNode node = readStringFirstNode("ns/a-symbol");
     assertThat(node, instanceOf(SymbolNode.class));
     SymbolNode node1 = (SymbolNode) node;
-    assertEquals(node1.getName(), "a-symbol");
-    assertEquals(node1.getNamespace(), "ns");
+    assertEquals("a-symbol", node1.getName());
+    assertEquals("ns", node1.getNamespace());
   }
 
   @Test
   public void readKeyword() throws Exception {
-    Node node = readStringFirstNode(":a-keyword");
+    AstNode node = readStringFirstNode(":a-keyword");
     assertThat(node, instanceOf(KeywordNode.class));
     KeywordNode node1 = (KeywordNode) node;
-    assertEquals(node1.getName(), "a-keyword");
-    assertEquals(node1.getNamespace(), "");
+    assertEquals("a-keyword", node1.getName());
+    assertEquals("", node1.getNamespace());
   }
 
   @Test
   public void readKeywordWithNamespace() throws Exception {
-    Node node = readStringFirstNode(":ns/a-keyword");
+    AstNode node = readStringFirstNode(":ns/a-keyword");
     assertThat(node, instanceOf(KeywordNode.class));
     KeywordNode node1 = (KeywordNode) node;
-    assertEquals(node1.getName(), "a-keyword");
-    assertEquals(node1.getNamespace(), "ns");
+    assertEquals("a-keyword", node1.getName());
+    assertEquals("ns", node1.getNamespace());
   }
 
   @Test
   public void readKeywordFollowedByWhitespace() throws Exception {
-    Node node = readStringFirstNode(":a-keyword\n");
+    AstNode node = readStringFirstNode(":a-keyword\n");
     assertThat(node, instanceOf(KeywordNode.class));
     KeywordNode node1 = (KeywordNode) node;
-    assertEquals(node1.getName(), "a-keyword");
-    assertEquals(node1.getNamespace(), "");
+    assertEquals("a-keyword", node1.getName());
+    assertEquals("", node1.getNamespace());
   }
 
   @Test
   public void readSingleDigit() throws Exception {
     for (Integer i = 0; i < 10; i++) {
       String intAsString = i.toString();
-      Node node = readStringFirstNode(intAsString);
+      AstNode node = readStringFirstNode(intAsString);
       assertThat(node, instanceOf(IntegerNode.class));
       IntegerNode node1 = (IntegerNode) node;
-      assertEquals(node1.getValueAsString(), intAsString);
+      assertEquals(intAsString, node1.getValueAsString());
       assertFalse(node1.isArbitraryPrecision());
       assertTrue(node1.isPositive());
     }
@@ -204,10 +206,10 @@ public class LavaReaderTest {
   public void readSingleDigitFollowedByWhitespace() throws Exception {
     for (Integer i = 0; i < 10; i++) {
       String intAsString = i.toString();
-      Node node = readStringFirstNode(intAsString + "\n");
+      AstNode node = readStringFirstNode(intAsString + "\n");
       assertThat(node, instanceOf(IntegerNode.class));
       IntegerNode node1 = (IntegerNode) node;
-      assertEquals(node1.getValueAsString(), intAsString);
+      assertEquals(intAsString, node1.getValueAsString());
       assertFalse(node1.isArbitraryPrecision());
       assertTrue(node1.isPositive());
     }
@@ -217,10 +219,10 @@ public class LavaReaderTest {
   public void readSingleDigitArbitraryPosition() throws Exception {
     for (Integer i = 0; i < 10; i++) {
       String intAsString = i.toString();
-      Node node = readStringFirstNode(intAsString + "N");
+      AstNode node = readStringFirstNode(intAsString + "N");
       assertThat(node, instanceOf(IntegerNode.class));
       IntegerNode node1 = (IntegerNode) node;
-      assertEquals(node1.getValueAsString(), intAsString);
+      assertEquals(intAsString, node1.getValueAsString());
       assertTrue(node1.isArbitraryPrecision());
       assertTrue(node1.isPositive());
     }
@@ -230,10 +232,10 @@ public class LavaReaderTest {
   public void readSingleDigitArbitraryPositionFollowedByWhitespace() throws Exception {
     for (Integer i = 0; i < 10; i++) {
       String intAsString = i.toString();
-      Node node = readStringFirstNode(intAsString + "N\n");
+      AstNode node = readStringFirstNode(intAsString + "N\n");
       assertThat(node, instanceOf(IntegerNode.class));
       IntegerNode node1 = (IntegerNode) node;
-      assertEquals(node1.getValueAsString(), intAsString);
+      assertEquals(intAsString, node1.getValueAsString());
       assertTrue(node1.isArbitraryPrecision());
       assertTrue(node1.isPositive());
     }
@@ -241,7 +243,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsMultipleDigits() throws Exception {
-    Node node = readStringFirstNode("123");
+    AstNode node = readStringFirstNode("123");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("123", node1.getValueAsString());
@@ -251,7 +253,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsMultipleDigitsArbitraryPosition() throws Exception {
-    Node node = readStringFirstNode("123N");
+    AstNode node = readStringFirstNode("123N");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("123", node1.getValueAsString());
@@ -261,7 +263,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsMultipleDigitsArbitraryPositionFollowedByWhitespace() throws Exception {
-    Node node = readStringFirstNode("123N\n");
+    AstNode node = readStringFirstNode("123N\n");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("123", node1.getValueAsString());
@@ -271,7 +273,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsALargeInteger() throws Exception {
-    Node node = readStringFirstNode("12345678900987654321234567890");
+    AstNode node = readStringFirstNode("12345678900987654321234567890");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("12345678900987654321234567890", node1.getValueAsString());
@@ -281,7 +283,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsAnIntegerWithAPlusSignInFront() throws Exception {
-    Node node = readStringFirstNode("+1");
+    AstNode node = readStringFirstNode("+1");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("1", node1.getValueAsString());
@@ -291,7 +293,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsAnIntegerWithAMinusSignInFront() throws Exception {
-    Node node = readStringFirstNode("-1");
+    AstNode node = readStringFirstNode("-1");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("1", node1.getValueAsString());
@@ -301,7 +303,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsAnIntegerWithAPlusInFrontAndArbitraryPrecision() throws Exception {
-    Node node = readStringFirstNode("+1234567890N");
+    AstNode node = readStringFirstNode("+1234567890N");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("1234567890", node1.getValueAsString());
@@ -311,7 +313,7 @@ public class LavaReaderTest {
 
   @Test
   public void readsAnIntegerWithAMinusSignInFrontAndArbitraryPrecision() throws Exception {
-    Node node = readStringFirstNode("-1234567890N");
+    AstNode node = readStringFirstNode("-1234567890N");
     assertThat(node, instanceOf(IntegerNode.class));
     IntegerNode node1 = (IntegerNode) node;
     assertEquals("1234567890", node1.getValueAsString());
@@ -321,7 +323,7 @@ public class LavaReaderTest {
 
   @Test
   public void readAPlusSymbol() throws Exception {
-    Node node = readStringFirstNode("+");
+    AstNode node = readStringFirstNode("+");
     assertThat(node, instanceOf(SymbolNode.class));
     SymbolNode node1 = (SymbolNode) node;
     assertEquals("+", node1.getName());
@@ -330,10 +332,233 @@ public class LavaReaderTest {
 
   @Test
   public void readAMinusSymbol() throws Exception {
-    Node node = readStringFirstNode("-");
+    AstNode node = readStringFirstNode("-");
     assertThat(node, instanceOf(SymbolNode.class));
     SymbolNode node1 = (SymbolNode) node;
     assertEquals("-", node1.getName());
     assertEquals("", node1.getNamespace());
+  }
+
+  @Test
+  public void readAnIntWithAnM() throws Exception {
+    AstNode node = readStringFirstNode("123M");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("", node1.getDecimalValueAsString());
+    assertEquals("", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAnIntWithAnMAndFollowedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("123M\n");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("", node1.getDecimalValueAsString());
+    assertEquals("", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readANegativeIntWithAnM() throws Exception {
+    AstNode node = readStringFirstNode("-123M");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("", node1.getDecimalValueAsString());
+    assertEquals("", node1.getExponentValueAsString());
+    assertFalse(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAPositiveFloatWithADecimal() throws Exception {
+    AstNode node = readStringFirstNode("123.456");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAPositiveFloatWithADecimalFollowedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("123.456\n");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAPositiveFloatWithADecimalWithAPlusSign() throws Exception {
+    AstNode node = readStringFirstNode("+123.456");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAPositiveFloatWithADecimalWithAMinusSign() throws Exception {
+    AstNode node = readStringFirstNode("-123.456");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("", node1.getExponentValueAsString());
+    assertFalse(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAFloatWithALowercaseEExponent() throws Exception {
+    AstNode node = readStringFirstNode("123.456e789");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("789", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAFloatWithALowercaseEExponentWithPlusSign() throws Exception {
+    AstNode node = readStringFirstNode("123.456e+789");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("789", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAFloatWithALowercaseEExponentWithMinusSign() throws Exception {
+    AstNode node = readStringFirstNode("123.456e-789");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("789", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertFalse(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAFloatWithAnUppercaseEExp() throws Exception {
+    AstNode node = readStringFirstNode("123.456E789");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("789", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAFloatWithAnUppercaseEExponentWithPlusSign() throws Exception {
+    AstNode node = readStringFirstNode("123.456E+789");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("789", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAFloatWithAnUppercaseEExponentWithMinusSign() throws Exception {
+    AstNode node = readStringFirstNode("123.456E-789");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("789", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertFalse(node1.isExponentPositive());
+  }
+
+  // TODO
+  // 123.456e\n - newline immediately following e
+  // 123.456e+\n - newline immediately following plus sign
+  // 123.456e+\n - newline immediately following minus sign
+  // 123.456e7+89 - misplaced sign
+  // 123.456e789a - invalid character
+
+  @Test
+  public void readAFloatWithExponentFollowedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("123.456e789\n");
+    assertThat(node, instanceOf(FloatNode.class));
+    FloatNode node1 = (FloatNode) node;
+    assertEquals("123", node1.getIntValueAsString());
+    assertEquals("456", node1.getDecimalValueAsString());
+    assertEquals("789", node1.getExponentValueAsString());
+    assertTrue(node1.isPositive());
+    assertTrue(node1.isExponentPositive());
+  }
+
+  @Test
+  public void readAnEmptyList() throws Exception {
+    AstNode node = readStringFirstNode("()");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(0, listNodes.size());
+  }
+
+  @Test
+  public void readAnEmptyListWithASpace() throws Exception {
+    AstNode node = readStringFirstNode("( )");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(0, listNodes.size());
+  }
+
+  @Test
+  public void readAnEmptyListWithMultipleSpaces() throws Exception {
+    AstNode node = readStringFirstNode("(  )");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(0, listNodes.size());
+  }
+
+  @Test
+  public void readAnEmptyListWithANewline() throws Exception {
+    AstNode node = readStringFirstNode("(\n)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(0, listNodes.size());
+  }
+
+  @Test
+  public void readAListWithOneSymbol() throws Exception {
+    AstNode node = readStringFirstNode("(a)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    SymbolNode symbolNode = (SymbolNode) listNodes.first();
+    assertEquals("a", symbolNode.getName());
+    assertEquals("", symbolNode.getNamespace());
   }
 }

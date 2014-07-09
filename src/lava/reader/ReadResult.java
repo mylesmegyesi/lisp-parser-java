@@ -9,7 +9,7 @@ public interface ReadResult {
 
   ReadState getNextState();
 
-  ImmutableList<Node> getNodes();
+  ImmutableList<AstNode> getNodes();
 
   ReadError getReadError();
 }

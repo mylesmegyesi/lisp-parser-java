@@ -5,9 +5,11 @@ import lava.util.ImmutableList;
 public class ReadWithSeenNode implements ReadState {
 
   private ReadState wrappedState;
-  private ImmutableList<Node> seenNodes;
+  private ImmutableList<AstNode> seenNodes;
+  private ParentReadState parentReadState;
 
-  public ReadWithSeenNode(ImmutableList<Node> seenNodes, ReadState readState) {
+  public ReadWithSeenNode(ParentReadState parentReadState, ImmutableList<AstNode> seenNodes, ReadState readState) {
+    this.parentReadState = parentReadState;
     this.seenNodes = seenNodes;
     this.wrappedState = readState;
   }
@@ -21,11 +23,19 @@ public class ReadWithSeenNode implements ReadState {
         return result;
       }
     } else {
-      return ReadResultFactory.notDoneYet(new ReadWithSeenNode(this.seenNodes, result.getNextState()));
+      return ReadResultFactory.notDoneYet(new ReadWithSeenNode(this.parentReadState, this.seenNodes, result.getNextState()));
     }
   }
 
   public ReadResult finish() {
     return ReadResultFactory.done(this.seenNodes);
+  }
+
+  public boolean terminal(char c) {
+    return false;
+  }
+
+  public ParentReadState getParentReadState() {
+    return this.parentReadState;
   }
 }

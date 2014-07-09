@@ -8,12 +8,12 @@ public class ReadResultFactory {
     return new NotDoneReadResult(nextState);
   }
 
-  public static ReadResult done(ImmutableList<Node> nodes) {
+  public static ReadResult done(ImmutableList<AstNode> nodes) {
     return new DoneReadResult(nodes);
   }
 
-  public static ReadResult done(Node node) {
-    ImmutableList<Node> nodes = new ImmutableArrayList<Node>();
+  public static ReadResult done(AstNode node) {
+    ImmutableList<AstNode> nodes = new ImmutableArrayList<AstNode>();
     return new DoneReadResult(nodes.append(node));
   }
 }

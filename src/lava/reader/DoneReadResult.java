@@ -4,9 +4,9 @@ import lava.util.ImmutableList;
 
 public class DoneReadResult implements ReadResult {
 
-  private ImmutableList<Node> resultNodes;
+  private ImmutableList<AstNode> resultNodes;
 
-  DoneReadResult(ImmutableList<Node> resultNodes) {
+  DoneReadResult(ImmutableList<AstNode> resultNodes) {
     this.resultNodes = resultNodes;
   }
 
@@ -22,7 +22,7 @@ public class DoneReadResult implements ReadResult {
     return null;
   }
 
-  public ImmutableList<Node> getNodes() {
+  public ImmutableList<AstNode> getNodes() {
     return this.resultNodes;
   }
 

@@ -1,5 +1,5 @@
 package lava.reader;
 
 public interface ExprReadStateFactory {
-  public ReadState newExprReadState();
+  public ReadState newExprReadState(ParentReadState parentReadState);
 }

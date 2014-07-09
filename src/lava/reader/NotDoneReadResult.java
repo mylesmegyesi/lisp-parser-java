@@ -23,8 +23,8 @@ public class NotDoneReadResult implements ReadResult {
     return this.nextState;
   }
 
-  public ImmutableList<Node> getNodes() {
-    return new ImmutableArrayList<Node>();
+  public ImmutableList<AstNode> getNodes() {
+    return new ImmutableArrayList<AstNode>();
   }
 
   public ReadError getReadError() {

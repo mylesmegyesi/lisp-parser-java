@@ -1,6 +1,6 @@
 package lava.reader;
 
-public class BooleanNode implements Node {
+public class BooleanNode implements AstNode {
 
   private boolean value;
 

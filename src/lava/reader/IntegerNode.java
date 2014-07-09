@@ -1,6 +1,6 @@
 package lava.reader;
 
-public class IntegerNode implements Node {
+public class IntegerNode implements AstNode {
   private String value;
   private boolean arbitraryPrecision;
   private boolean positive;

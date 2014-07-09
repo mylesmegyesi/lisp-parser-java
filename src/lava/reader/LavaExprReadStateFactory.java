@@ -2,8 +2,8 @@ package lava.reader;
 
 public class LavaExprReadStateFactory implements ExprReadStateFactory {
 
-  public ReadState newExprReadState() {
-    return new ReadLavaExpr();
+  public ReadState newExprReadState(ParentReadState parentReadState) {
+    return new ReadLavaExpr(this, parentReadState);
   }
 
 }
