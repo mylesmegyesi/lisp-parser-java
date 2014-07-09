@@ -9,24 +9,24 @@ public class SymbolNodeTest {
   @Test
   public void fromStringWithoutNs() throws Exception {
     SymbolNode withoutNs = SymbolNode.fromString("a-symbol");
-    assertEquals(withoutNs.getNamespace(), "");
-    assertEquals(withoutNs.getName(), "a-symbol");
+    assertEquals("a-symbol", withoutNs.getName());
+    assertEquals("", withoutNs.getNamespace());
   }
 
   @Test
   public void fromStringWithNs() throws Exception {
     SymbolNode withoutNs = SymbolNode.fromString("ns/a-symbol");
-    assertEquals(withoutNs.getNamespace(), "ns");
-    assertEquals(withoutNs.getName(), "a-symbol");
+    assertEquals("a-symbol", withoutNs.getName());
+    assertEquals("ns", withoutNs.getNamespace());
   }
 
   @Test
   public void toStringWithoutNs() throws Exception {
-    assertEquals(SymbolNode.fromString("a-symbol").toString(), "a-symbol");
+    assertEquals("a-symbol", SymbolNode.fromString("a-symbol").toString());
   }
 
   @Test
   public void toStringWithNs() throws Exception {
-    assertEquals(SymbolNode.fromString("ns/a-symbol").toString(), "ns/a-symbol");
+    assertEquals("ns/a-symbol", SymbolNode.fromString("ns/a-symbol").toString());
   }
 }

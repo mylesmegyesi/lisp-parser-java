@@ -15,7 +15,7 @@ public class ReadKeyword implements ReadState {
   }
 
   public ReadResult handle(char c) {
-    if (Util.isWhitespace(c)) {
+    if (Util.isWhitespace(c) || this.parentReadState.terminal(c)) {
       return this.finish();
     } else {
       return ReadResultFactory.notDoneYet(new ReadKeyword(this.parentReadState, this.seenChars.add(c)));

@@ -35,4 +35,32 @@ public class FloatNode implements AstNode {
   public boolean isExponentPositive() {
     return exponentPositive;
   }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    if (!this.positive) {
+      sb.append("-");
+    }
+    if (this.intValueAsString.length() == 0) {
+      sb.append("0");
+    } else {
+      sb.append(this.intValueAsString);
+    }
+    if (this.decimalValueAsString.length() == 0 && this.exponentValueAsString.length() == 0) {
+      sb.append("M");
+    } else {
+      if (this.decimalValueAsString.length() != 0) {
+        sb.append(".");
+        sb.append(this.decimalValueAsString);
+      }
+      if (this.exponentValueAsString.length() != 0) {
+        sb.append("E");
+        if (!this.exponentPositive) {
+          sb.append("-");
+        }
+        sb.append(this.exponentValueAsString);
+      }
+    }
+    return sb.toString();
+  }
 }

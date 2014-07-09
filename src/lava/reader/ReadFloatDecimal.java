@@ -21,7 +21,7 @@ public class ReadFloatDecimal implements ReadState {
   public ReadResult handle(char c) {
     if (Character.isDigit(c)) {
       return ReadResultFactory.notDoneYet(new ReadFloatDecimal(this.parentReadState, this.positive, this.intValueAsString, this.seenDecimalChars.add(c)));
-    } else if (Util.isWhitespace(c)) {
+    } else if (Util.isWhitespace(c) || this.parentReadState.terminal(c)) {
       return this.finish();
     } else if (c == 'e') {
       return ReadResultFactory.notDoneYet(new ReadFloatExponentFirstChar(this.parentReadState, this.positive, this.intValueAsString, this.seenDecimalChars.toString()));

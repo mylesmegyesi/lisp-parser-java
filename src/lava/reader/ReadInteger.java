@@ -24,7 +24,7 @@ public class ReadInteger implements ReadState {
     if (Character.isDigit(c)) {
       ReadState nextState = new ReadInteger(this.parentReadState, this.positive, this.leadingSign, this.arbitraryPrecision, this.seenChars.add(c));
       return ReadResultFactory.notDoneYet(nextState);
-    } else if (Util.isWhitespace(c)) {
+    } else if (Util.isWhitespace(c) || this.parentReadState.terminal(c)) {
       return this.finish();
     } else if (c == 'N') {
       AstNode result = new IntegerNode(this.positive, this.seenChars.toString(), true);

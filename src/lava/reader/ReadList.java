@@ -29,8 +29,6 @@ public class ReadList implements ReadState, ParentReadState {
     if (wrappedResult.isFinished()) {
       if (wrappedResult.isSuccess()) {
         ImmutableList<AstNode> allNodes = this.seenNodes.append(wrappedResult.getNodes());
-        for (AstNode node : allNodes) {
-        }
         if (this.terminal(c)) {
           return ReadResultFactory.done(new ListNode(allNodes));
         } else {

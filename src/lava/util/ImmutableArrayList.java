@@ -1,32 +1,32 @@
 package lava.util;
 
-import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ImmutableArrayList<T> implements ImmutableList<T> {
 
   private int size;
-  private T[] items;
+  private ArrayList<T> items;
 
   public ImmutableArrayList() {
     this.size = 0;
     this.items = null;
   }
 
-  private ImmutableArrayList(int size, T[] items) {
+  private ImmutableArrayList(int size, ArrayList<T> items) {
     this.size = size;
     this.items = items;
   }
 
   public ImmutableList<T> append(T item) {
-    T[] newArr;
+    ArrayList<T> newArr;
     if (this.size == 0) {
-      newArr = (T[]) Array.newInstance(item.getClass(), 1);
+      newArr = new ArrayList<T>(1);
     } else {
-      newArr = (T[]) Array.newInstance(item.getClass(), this.size + 1);
-      System.arraycopy(this.items, 0, newArr, 0, this.size);
+      newArr = new ArrayList<T>(this.size + 1);
+      newArr.addAll(this.items);
     }
-    newArr[this.size] = item;
+    newArr.add(item);
     return new ImmutableArrayList<T>(this.size + 1, newArr);
   }
 
@@ -46,7 +46,7 @@ public class ImmutableArrayList<T> implements ImmutableList<T> {
     if ((index < 0 || index >= this.size)) {
       throw new IndexOutOfBoundsException();
     }
-    return this.items[index];
+    return this.items.get(index);
   }
 
   public String toString() {

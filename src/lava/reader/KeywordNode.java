@@ -16,6 +16,6 @@ public class KeywordNode implements AstNode {
   }
 
   public String toString() {
-    return this.symbol.toString();
+    return ":" + this.symbol.toString();
   }
 }

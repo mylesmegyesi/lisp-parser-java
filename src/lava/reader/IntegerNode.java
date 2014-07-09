@@ -22,4 +22,18 @@ public class IntegerNode implements AstNode {
   public boolean isPositive() {
     return this.positive;
   }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    if (this.positive) {
+      sb.append(this.value);
+    } else {
+      sb.append("-");
+      sb.append(this.value);
+    }
+    if (this.arbitraryPrecision) {
+      sb.append("N");
+    }
+    return sb.toString();
+  }
 }

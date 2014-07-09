@@ -561,4 +561,202 @@ public class LavaReaderTest {
     assertEquals("a", symbolNode.getName());
     assertEquals("", symbolNode.getNamespace());
   }
+
+  @Test
+  public void readAListWithOneSymbolPrecededByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("(\na)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    SymbolNode symbolNode = (SymbolNode) listNodes.first();
+    assertEquals("a", symbolNode.getName());
+    assertEquals("", symbolNode.getNamespace());
+  }
+
+  @Test
+  public void readAListWithOneSymbolFollowedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("(\na\n)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    SymbolNode symbolNode = (SymbolNode) listNodes.first();
+    assertEquals("a", symbolNode.getName());
+    assertEquals("", symbolNode.getNamespace());
+  }
+
+  @Test
+  public void readAListWithTwoSymbolsSeparatedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("(a b)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(2, listNodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
+    assertEquals("a", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) listNodes.get(1);
+    assertEquals("b", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+  }
+
+  @Test
+  public void readAListWithFiveSymbolsSeparatedByWhitespace() throws Exception {
+    AstNode node = readStringFirstNode("(\n a, ,b, the-ns/c\n)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(3, listNodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
+    assertEquals("a", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) listNodes.get(1);
+    assertEquals("b", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+
+    SymbolNode symbolNode3 = (SymbolNode) listNodes.get(2);
+    assertEquals("c", symbolNode3.getName());
+    assertEquals("the-ns", symbolNode3.getNamespace());
+  }
+
+  @Test
+  public void readsMultipleExpressions() throws Exception {
+    ImmutableList<AstNode> nodes = readString("abc def");
+    assertEquals(2, nodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) nodes.first();
+    assertEquals("abc", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) nodes.get(1);
+    assertEquals("def", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+  }
+
+  @Test
+  public void readsAListExpressionThenAnotherExpression() throws Exception {
+    ImmutableList<AstNode> nodes = readString("(a b) def");
+    assertEquals(2, nodes.size());
+
+    ImmutableList<AstNode> listNodes = ((ListNode) nodes.first()).getNodes();
+    assertEquals(2, listNodes.size());
+
+    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
+    assertEquals("a", symbolNode1.getName());
+    assertEquals("", symbolNode1.getNamespace());
+
+    SymbolNode symbolNode2 = (SymbolNode) listNodes.get(1);
+    assertEquals("b", symbolNode2.getName());
+    assertEquals("", symbolNode2.getNamespace());
+
+    SymbolNode symbolNode3 = (SymbolNode) nodes.get(1);
+    assertEquals("def", symbolNode3.getName());
+    assertEquals("", symbolNode3.getNamespace());
+  }
+
+  @Test
+  public void readAListWithOneInteger() throws Exception {
+    AstNode node = readStringFirstNode("(1)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    IntegerNode integerNode = (IntegerNode) listNodes.first();
+    assertEquals("1", integerNode.getValueAsString());
+    assertTrue(integerNode.isPositive());
+    assertFalse(integerNode.isArbitraryPrecision());
+  }
+
+  @Test
+  public void readAListWithTwoIntegers() throws Exception {
+    AstNode node = readStringFirstNode("(1 -2)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(2, listNodes.size());
+
+    IntegerNode integerNode1 = (IntegerNode) listNodes.first();
+    assertEquals("1", integerNode1.getValueAsString());
+    assertTrue(integerNode1.isPositive());
+    assertFalse(integerNode1.isArbitraryPrecision());
+
+    IntegerNode integerNode2 = (IntegerNode) listNodes.get(1);
+    assertEquals("2", integerNode2.getValueAsString());
+    assertFalse(integerNode2.isPositive());
+    assertFalse(integerNode2.isArbitraryPrecision());
+  }
+
+  @Test
+  public void readAListWithOneFloat() throws Exception {
+    AstNode node = readStringFirstNode("(1.0)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    FloatNode floatNode = (FloatNode) listNodes.first();
+    assertEquals("1", floatNode.getIntValueAsString());
+    assertEquals("0", floatNode.getDecimalValueAsString());
+  }
+
+  @Test
+  public void readAListWithOneFloatWithExponent() throws Exception {
+    AstNode node = readStringFirstNode("(1.0E1)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    FloatNode floatNode = (FloatNode) listNodes.first();
+    assertEquals("1", floatNode.getIntValueAsString());
+    assertEquals("0", floatNode.getDecimalValueAsString());
+    assertEquals("1", floatNode.getExponentValueAsString());
+  }
+
+  @Test
+  public void readAListWithOneKeyword() throws Exception {
+    AstNode node = readStringFirstNode("(:a)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    KeywordNode keywordNode = (KeywordNode) listNodes.first();
+    assertEquals("a", keywordNode.getName());
+    assertEquals("", keywordNode.getNamespace());
+  }
+
+  @Test
+  public void readAListWithNil() throws Exception {
+    AstNode node = readStringFirstNode("(nil)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    assertThat(listNodes.first(), instanceOf(NilNode.class));
+  }
+
+  @Test
+  public void readAListWithTrue() throws Exception {
+    AstNode node = readStringFirstNode("(true)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    BooleanNode booleanNode = (BooleanNode) listNodes.first();
+    assertTrue(booleanNode.getValue());
+  }
+
+  @Test
+  public void readAListWithFalse() throws Exception {
+    AstNode node = readStringFirstNode("(false)");
+    assertThat(node, instanceOf(ListNode.class));
+    ListNode node1 = (ListNode) node;
+    ImmutableList<AstNode> listNodes = node1.getNodes();
+    assertEquals(1, listNodes.size());
+    BooleanNode booleanNode = (BooleanNode) listNodes.first();
+    assertFalse(booleanNode.getValue());
+  }
 }

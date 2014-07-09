@@ -28,7 +28,16 @@ public class ReadWithSeenNode implements ReadState {
   }
 
   public ReadResult finish() {
-    return ReadResultFactory.done(this.seenNodes);
+    ReadResult result = this.wrappedState.finish();
+    if (result.isFinished()) {
+      if (result.isSuccess()) {
+        return ReadResultFactory.done(this.seenNodes.append(result.getNodes()));
+      } else {
+        return result;
+      }
+    } else {
+      return ReadResultFactory.notDoneYet(new ReadWithSeenNode(this.parentReadState, this.seenNodes, result.getNextState()));
+    }
   }
 
   public boolean terminal(char c) {

@@ -25,8 +25,14 @@ public class ReadFloatExponentAfterFirst implements ReadState {
   public ReadResult handle(char c) {
     if (Character.isDigit(c)) {
       return ReadResultFactory.notDoneYet(new ReadFloatExponentAfterFirst(this.parentReadState, this.positive, this.intValueAsString, this.decimalValueAsString, this.exponentPositive, this.seenExponentChars.add(c)));
-    } else if (Util.isWhitespace(c)) {
-      return ReadResultFactory.done(new FloatNode(this.positive, this.intValueAsString, this.decimalValueAsString, this.seenExponentChars.toString(), this.exponentPositive));
+    } else if (Util.isWhitespace(c) || this.parentReadState.terminal(c)) {
+      String exponentValueAsString = this.seenExponentChars.toString();
+      if (exponentValueAsString.length() == 0) {
+        // error
+        return null;
+      } else {
+        return ReadResultFactory.done(new FloatNode(this.positive, this.intValueAsString, this.decimalValueAsString, this.seenExponentChars.toString(), this.exponentPositive));
+      }
     } else {
       // unexpected char
       return null;
