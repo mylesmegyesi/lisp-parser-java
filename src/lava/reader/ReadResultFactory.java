@@ -1,7 +1,6 @@
 package lava.reader;
 
-import lava.util.ImmutableArrayList;
-import lava.util.ImmutableList;
+import com.google.common.collect.ImmutableList;
 
 public class ReadResultFactory {
   public static ReadResult notDoneYet(ReadState nextState) {
@@ -13,7 +12,6 @@ public class ReadResultFactory {
   }
 
   public static ReadResult done(AstNode node) {
-    ImmutableList<AstNode> nodes = new ImmutableArrayList<AstNode>();
-    return new DoneReadResult(nodes.append(node));
+    return new DoneReadResult(ImmutableList.<AstNode>of(node));
   }
 }

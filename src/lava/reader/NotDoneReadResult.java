@@ -1,7 +1,6 @@
 package lava.reader;
 
-import lava.util.ImmutableArrayList;
-import lava.util.ImmutableList;
+import com.google.common.collect.ImmutableList;
 
 public class NotDoneReadResult implements ReadResult {
 
@@ -24,7 +23,7 @@ public class NotDoneReadResult implements ReadResult {
   }
 
   public ImmutableList<AstNode> getNodes() {
-    return new ImmutableArrayList<AstNode>();
+    return ImmutableList.<AstNode>of();
   }
 
   public ReadError getReadError() {

@@ -1,6 +1,6 @@
 package lava.reader;
 
-import lava.util.ImmutableArrayList;
+import com.google.common.collect.ImmutableList;
 
 public class ReadLavaExpr implements ReadState {
 
@@ -37,7 +37,7 @@ public class ReadLavaExpr implements ReadState {
   }
 
   public ReadResult finish() {
-    return ReadResultFactory.done(new ImmutableArrayList<AstNode>());
+    return ReadResultFactory.done(ImmutableList.<AstNode>of());
   }
 
   public ParentReadState getParentReadState() {

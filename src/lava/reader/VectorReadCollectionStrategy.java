@@ -1,6 +1,6 @@
 package lava.reader;
 
-import lava.util.ImmutableList;
+import com.google.common.collect.ImmutableList;
 
 public class VectorReadCollectionStrategy implements ReadCollectionStrategy {
   public char getTerminalChar() {

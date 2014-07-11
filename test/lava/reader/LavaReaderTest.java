@@ -1,6 +1,6 @@
 package lava.reader;
 
-import lava.util.ImmutableList;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -16,14 +16,7 @@ public class LavaReaderTest {
 
   private AstNode readStringFirstNode(String s) throws Exception {
     ImmutableList<AstNode> nodes = readString(s);
-    if (nodes.size() == 1) {
-      return nodes.first();
-    } else if (nodes.size() == 0) {
-      fail("Tried read first node of string but no nodes: " + nodes.toString());
-    } else {
-      fail("Tried read first node of string but multiple nodes read: " + nodes.toString());
-    }
-    return null;
+    return nodes.get(0);
   }
 
   @Test
@@ -519,7 +512,7 @@ public class LavaReaderTest {
     ImmutableList<AstNode> nodes = readString("abc def");
     assertEquals(2, nodes.size());
 
-    SymbolNode symbolNode1 = (SymbolNode) nodes.first();
+    SymbolNode symbolNode1 = (SymbolNode) nodes.get(0);
     assertEquals("abc", symbolNode1.getName());
     assertEquals("", symbolNode1.getNamespace());
 
@@ -533,10 +526,10 @@ public class LavaReaderTest {
     ImmutableList<AstNode> nodes = readString("(a b) def");
     assertEquals(2, nodes.size());
 
-    ImmutableList<AstNode> listNodes = ((ListNode) nodes.first()).getNodes();
+    ImmutableList<AstNode> listNodes = ((ListNode) nodes.get(0)).getNodes();
     assertEquals(2, listNodes.size());
 
-    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
+    SymbolNode symbolNode1 = (SymbolNode) listNodes.get(0);
     assertEquals("a", symbolNode1.getName());
     assertEquals("", symbolNode1.getNamespace());
 
@@ -592,7 +585,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    SymbolNode symbolNode = (SymbolNode) listNodes.first();
+    SymbolNode symbolNode = (SymbolNode) listNodes.get(0);
     assertEquals("a", symbolNode.getName());
     assertEquals("", symbolNode.getNamespace());
   }
@@ -604,7 +597,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    SymbolNode symbolNode = (SymbolNode) listNodes.first();
+    SymbolNode symbolNode = (SymbolNode) listNodes.get(0);
     assertEquals("a", symbolNode.getName());
     assertEquals("", symbolNode.getNamespace());
   }
@@ -616,7 +609,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    SymbolNode symbolNode = (SymbolNode) listNodes.first();
+    SymbolNode symbolNode = (SymbolNode) listNodes.get(0);
     assertEquals("a", symbolNode.getName());
     assertEquals("", symbolNode.getNamespace());
   }
@@ -629,7 +622,7 @@ public class LavaReaderTest {
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(2, listNodes.size());
 
-    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
+    SymbolNode symbolNode1 = (SymbolNode) listNodes.get(0);
     assertEquals("a", symbolNode1.getName());
     assertEquals("", symbolNode1.getNamespace());
 
@@ -646,7 +639,7 @@ public class LavaReaderTest {
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(3, listNodes.size());
 
-    SymbolNode symbolNode1 = (SymbolNode) listNodes.first();
+    SymbolNode symbolNode1 = (SymbolNode) listNodes.get(0);
     assertEquals("a", symbolNode1.getName());
     assertEquals("", symbolNode1.getNamespace());
 
@@ -666,7 +659,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    IntegerNode integerNode = (IntegerNode) listNodes.first();
+    IntegerNode integerNode = (IntegerNode) listNodes.get(0);
     assertEquals("1", integerNode.getValueAsString());
     assertTrue(integerNode.isPositive());
     assertFalse(integerNode.isArbitraryPrecision());
@@ -680,7 +673,7 @@ public class LavaReaderTest {
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(2, listNodes.size());
 
-    IntegerNode integerNode1 = (IntegerNode) listNodes.first();
+    IntegerNode integerNode1 = (IntegerNode) listNodes.get(0);
     assertEquals("1", integerNode1.getValueAsString());
     assertTrue(integerNode1.isPositive());
     assertFalse(integerNode1.isArbitraryPrecision());
@@ -698,7 +691,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    FloatNode floatNode = (FloatNode) listNodes.first();
+    FloatNode floatNode = (FloatNode) listNodes.get(0);
     assertEquals("1", floatNode.getIntValueAsString());
     assertEquals("0", floatNode.getDecimalValueAsString());
   }
@@ -710,7 +703,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    FloatNode floatNode = (FloatNode) listNodes.first();
+    FloatNode floatNode = (FloatNode) listNodes.get(0);
     assertEquals("1", floatNode.getIntValueAsString());
     assertEquals("0", floatNode.getDecimalValueAsString());
     assertEquals("1", floatNode.getExponentValueAsString());
@@ -723,7 +716,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    KeywordNode keywordNode = (KeywordNode) listNodes.first();
+    KeywordNode keywordNode = (KeywordNode) listNodes.get(0);
     assertEquals("a", keywordNode.getName());
     assertEquals("", keywordNode.getNamespace());
   }
@@ -735,7 +728,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    assertThat(listNodes.first(), instanceOf(NilNode.class));
+    assertThat(listNodes.get(0), instanceOf(NilNode.class));
   }
 
   @Test
@@ -745,7 +738,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    BooleanNode booleanNode = (BooleanNode) listNodes.first();
+    BooleanNode booleanNode = (BooleanNode) listNodes.get(0);
     assertTrue(booleanNode.getValue());
   }
 
@@ -756,7 +749,7 @@ public class LavaReaderTest {
     ListNode node1 = (ListNode) node;
     ImmutableList<AstNode> listNodes = node1.getNodes();
     assertEquals(1, listNodes.size());
-    BooleanNode booleanNode = (BooleanNode) listNodes.first();
+    BooleanNode booleanNode = (BooleanNode) listNodes.get(0);
     assertFalse(booleanNode.getValue());
   }
 
@@ -777,7 +770,7 @@ public class LavaReaderTest {
     ImmutableList<AstNode> vectorNodes = node1.getNodes();
     assertEquals(3, vectorNodes.size());
 
-    SymbolNode symbolNode1 = (SymbolNode) vectorNodes.first();
+    SymbolNode symbolNode1 = (SymbolNode) vectorNodes.get(0);
     assertEquals("a", symbolNode1.getName());
     assertEquals("", symbolNode1.getNamespace());
 
@@ -807,7 +800,7 @@ public class LavaReaderTest {
     ImmutableList<AstNode> setNodes = node1.getNodes();
     assertEquals(3, setNodes.size());
 
-    SymbolNode symbolNode1 = (SymbolNode) setNodes.first();
+    SymbolNode symbolNode1 = (SymbolNode) setNodes.get(0);
     assertEquals("a", symbolNode1.getName());
     assertEquals("", symbolNode1.getNamespace());
 
@@ -822,22 +815,22 @@ public class LavaReaderTest {
 
   @Test
   public void doesNotRemoveDuplicatesFromSetOnRead() throws Exception {
-    AstNode node = readStringFirstNode("#{a a a}");
+    AstNode node = readStringFirstNode("#{a b c}");
     assertThat(node, instanceOf(SetNode.class));
     SetNode node1 = (SetNode) node;
     ImmutableList<AstNode> setNodes = node1.getNodes();
     assertEquals(3, setNodes.size());
 
-    SymbolNode symbolNode1 = (SymbolNode) setNodes.first();
+    SymbolNode symbolNode1 = (SymbolNode) setNodes.get(0);
     assertEquals("a", symbolNode1.getName());
     assertEquals("", symbolNode1.getNamespace());
 
     SymbolNode symbolNode2 = (SymbolNode) setNodes.get(1);
-    assertEquals("a", symbolNode2.getName());
+    assertEquals("b", symbolNode2.getName());
     assertEquals("", symbolNode2.getNamespace());
 
     SymbolNode symbolNode3 = (SymbolNode) setNodes.get(2);
-    assertEquals("a", symbolNode3.getName());
+    assertEquals("c", symbolNode3.getName());
     assertEquals("", symbolNode3.getNamespace());
   }
 

@@ -1,6 +1,6 @@
 package lava.reader;
 
-import lava.util.ImmutableList;
+import com.google.common.collect.ImmutableList;
 
 public class ReadWithSeenNode implements ReadState {
 
@@ -18,7 +18,7 @@ public class ReadWithSeenNode implements ReadState {
     ReadResult result = this.wrappedState.handle(c);
     if (result.isFinished()) {
       if (result.isSuccess()) {
-        return ReadResultFactory.done(this.seenNodes.append(result.getNodes()));
+        return ReadResultFactory.done(this.seenNodesWith(result.getNodes()));
       } else {
         return result;
       }
@@ -31,7 +31,7 @@ public class ReadWithSeenNode implements ReadState {
     ReadResult result = this.wrappedState.finish();
     if (result.isFinished()) {
       if (result.isSuccess()) {
-        return ReadResultFactory.done(this.seenNodes.append(result.getNodes()));
+        return ReadResultFactory.done(this.seenNodesWith(result.getNodes()));
       } else {
         return result;
       }
@@ -46,5 +46,10 @@ public class ReadWithSeenNode implements ReadState {
 
   public ParentReadState getParentReadState() {
     return this.parentReadState;
+  }
+
+  private ImmutableList<AstNode> seenNodesWith(ImmutableList<AstNode> nodes) {
+    ImmutableList.Builder<AstNode> builder = ImmutableList.<AstNode>builder();
+    return builder.addAll(this.seenNodes).addAll(nodes).build();
   }
 }

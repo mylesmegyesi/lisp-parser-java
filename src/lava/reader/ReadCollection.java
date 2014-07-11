@@ -1,7 +1,6 @@
 package lava.reader;
 
-import lava.util.ImmutableArrayList;
-import lava.util.ImmutableList;
+import com.google.common.collect.ImmutableList;
 
 public class ReadCollection implements ReadState, ParentReadState {
 
@@ -15,7 +14,7 @@ public class ReadCollection implements ReadState, ParentReadState {
     this.exprReadStateFactory = exprReadStateFactory;
     this.wrappedExprState = exprReadStateFactory.newExprReadState(this);
     this.parentReadState = parentReadState;
-    this.seenNodes = new ImmutableArrayList<AstNode>();
+    this.seenNodes = ImmutableList.<AstNode>of();
     this.strategy = strategy;
   }
 
@@ -31,7 +30,8 @@ public class ReadCollection implements ReadState, ParentReadState {
     ReadResult wrappedResult = this.wrappedExprState.handle(c);
     if (wrappedResult.isFinished()) {
       if (wrappedResult.isSuccess()) {
-        ImmutableList<AstNode> allNodes = this.seenNodes.append(wrappedResult.getNodes());
+        ImmutableList.Builder<AstNode> builder = ImmutableList.<AstNode>builder();
+        ImmutableList<AstNode> allNodes = builder.addAll(this.seenNodes).addAll(wrappedResult.getNodes()).build();
         if (this.terminal(c)) {
           return ReadResultFactory.done(this.strategy.createNode(allNodes));
         } else {

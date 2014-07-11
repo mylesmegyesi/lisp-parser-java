@@ -1,14 +1,13 @@
 package lava.reader;
 
-import lava.util.ImmutableArrayList;
-import lava.util.ImmutableList;
+import com.google.common.collect.ImmutableList;
 
 public class SeenChars {
 
   private ImmutableList<Character> chars;
 
   public SeenChars() {
-    this.chars = new ImmutableArrayList<Character>();
+    this.chars = ImmutableList.<Character>of();
   }
 
   private SeenChars(ImmutableList<Character> chars) {
@@ -16,7 +15,8 @@ public class SeenChars {
   }
 
   public SeenChars add(char c) {
-    return new SeenChars(this.chars.append(c));
+    ImmutableList.Builder<Character> builder = ImmutableList.<Character>builder();
+    return new SeenChars(builder.addAll(this.chars).add(c).build());
   }
 
   public String toString() {
