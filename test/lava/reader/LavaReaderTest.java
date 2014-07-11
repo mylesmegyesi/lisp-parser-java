@@ -834,4 +834,150 @@ public class LavaReaderTest {
     assertEquals("", symbolNode3.getNamespace());
   }
 
+  @Test
+  public void readsAnEmptyString() throws Exception {
+    AstNode node = readStringFirstNode("\"\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("", node1.getValue());
+  }
+
+  @Test
+  public void readsAStringWithOneCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"a\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("a", node1.getValue());
+  }
+
+  @Test
+  public void readsAStringWithMultipleCharacters() throws Exception {
+    AstNode node = readStringFirstNode("\"abcdefg\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("abcdefg", node1.getValue());
+  }
+
+  @Test
+  public void readsAStringWithSpaces() throws Exception {
+    AstNode node = readStringFirstNode("\"abc de fg\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("abc de fg", node1.getValue());
+  }
+
+  @Test
+  public void readsAStringWithNewlines() throws Exception {
+    AstNode node = readStringFirstNode("\"abc\nde\nfg\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("abc\nde\nfg", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapedtCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\t\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\t", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapedbCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\b\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\b", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapednCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\n\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\n", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapedrCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\r\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\r", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapedfCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\f\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\f", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapedQuoteCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\'\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\'", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapedDoubleQuoteCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\\"\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\"", node1.getValue());
+  }
+
+  @Test
+  public void readsAnEscapedSlashCharacter() throws Exception {
+    AstNode node = readStringFirstNode("\"\\\\\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals("\\", node1.getValue());
+  }
+
+  public void assertReadsCharSequence(String delimiter, int radix, int... digits) throws Exception {
+    String unicode = "" + Character.forDigit(digits[0], radix);
+    int expectedChar = digits[0];
+    for (int i = 1; i < digits.length; i++) {
+      unicode += Character.forDigit(digits[i], radix);
+      expectedChar = (expectedChar * radix) + digits[i];
+    }
+    AstNode node = readStringFirstNode("\"\\" + delimiter + unicode + "\"");
+    assertThat(node, instanceOf(StringNode.class));
+    StringNode node1 = (StringNode) node;
+    assertEquals((char) expectedChar, node1.getValue().charAt(0));
+  }
+
+  @Test
+  public void readsAllUnicodeChars() throws Exception {
+    for (int firstChar = 0; firstChar < 16; firstChar++) {
+      for (int secondChar = 0; secondChar < 16; secondChar++) {
+        for (int thirdChar = 0; thirdChar < 16; thirdChar++) {
+          for (int fourthChar = 0; fourthChar < 16; fourthChar++) {
+            assertReadsCharSequence("u", 16, firstChar, secondChar, thirdChar, fourthChar);
+          }
+        }
+      }
+    }
+  }
+
+  // TODO
+  // Invalid length unicode
+
+  @Test
+  public void readsAllOctalChars() throws Exception {
+    for (int firstChar = 0; firstChar < 8; firstChar++) {
+      for (int secondChar = 0; secondChar < 8; secondChar++) {
+        for (int thirdChar = 0; thirdChar < 8; thirdChar++) {
+          assertReadsCharSequence("", 8, firstChar, secondChar, thirdChar);
+        }
+        assertReadsCharSequence("", 8, firstChar, secondChar);
+      }
+      assertReadsCharSequence("", 8, firstChar);
+    }
+  }
+
 }

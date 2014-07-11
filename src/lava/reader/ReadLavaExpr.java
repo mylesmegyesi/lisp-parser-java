@@ -31,6 +31,8 @@ public class ReadLavaExpr implements ReadState {
       return ReadResultFactory.notDoneYet(new ReadCollection(this.exprReadStateFactory, this.parentReadState, new VectorReadCollectionStrategy()));
     } else if (c == '#') {
       return ReadResultFactory.notDoneYet(new ReadSawPound(this.exprReadStateFactory, this.parentReadState));
+    } else if (c == '"') {
+      return ReadResultFactory.notDoneYet(new ReadString(this.parentReadState));
     } else {
       return new ReadSymbol(this.parentReadState).handle(c);
     }

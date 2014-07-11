@@ -26,4 +26,12 @@ public class SeenChars {
     }
     return sb.toString();
   }
+
+  public int size() {
+    return this.chars.size();
+  }
+
+  public Character get(int i) {
+    return this.chars.get(i);
+  }
 }
